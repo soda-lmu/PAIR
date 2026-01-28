@@ -1,4 +1,4 @@
-# Correcting Annotator Bias in Training Data: Population-Aligned Instance Replication (PAIR)
+# PAIR: Population-Aligned Instance Replication
 
 Aligning NLP Models with Target Population Perspectives using PAIR: Population-Aligned Instance Replication (https://aclanthology.org/2025.nlperspectives-1.9/)
 
