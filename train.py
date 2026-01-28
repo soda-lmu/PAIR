@@ -39,25 +39,28 @@ class TweetDataset(Dataset):
             'labels': torch.tensor(label, dtype=torch.long)  # Change to long type
         }
 
-mode = "weighted"# TODO: select from ["balanced", "unweighted", "weighted", "unweighted_1A3B"]
+mode = "adj"# TODO: select from ['bal', 'unbal1', 'unbal2', 'adj']
 X = 0.05 # TODO: select from [0, 0.01, 0.025, 0.05, 0.1, 0.2, 0.3]
-L = "hs" # TODO: select from ["hs", "ol"]
-train_l = "simulation" # TODO: select from ["A_label", "B_label", "simulation", "gold"]
-
+train_l = "new_hs" # TODO: select from ['new_hs', 'new_ol']
 
 # Read Data
-df = pd.read_csv(f"data/{mode}_{L}_label_{X}.csv", index_col=0)
-train = df[(df['tweet.id'] >= 1) & (df['tweet.id'] <= 2000)]
-val = df[(df['tweet.id'] >= 2001) & (df['tweet.id'] <= 2500)]
-test = pd.read_csv(f"data/test_{L}_label_{X}.csv", index_col=0)
+df = pd.read_csv(f"data/all_labels_full.csv", index_col=0)
+# select the dataset mode
+df_dataset = df[df['dataset'].str.contains(mode)]
+# further select based on column x which contains X value
+df_dataset = df_dataset[df_dataset[X].notna()]
+
+train = df_dataset[(df_dataset['tweet.id'] >= 1) & (df_dataset['tweet.id'] <= 2000)]
+val = df_dataset[(df_dataset['tweet.id'] >= 2001) & (df_dataset['tweet.id'] <= 2500)]
+test = df[df['dataset'].str.contains("gold")]
 
 train_texts = list(train.tweet_hashed)
 val_texts = list(val.tweet_hashed)
 test_texts = list(test.tweet_hashed)
 
-train_labels = list(train["simulation"])
-val_labels = list(val["simulation"])
-test_labels = list(test["gold"])
+train_labels = list(train[train_l])
+val_labels = list(val[train_l])
+test_labels = list(test["hs" if train_l == "new_hs" else "ol"])
 
 # Initialize the tokenizer
 tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
@@ -129,7 +132,8 @@ predictions = logits.argmax(-1)
 test[f"{mode}_preds"] = predictions
 test[f"{mode}_preds_scores"] = probability_list
 
-test.to_csv(f"data/test_{L}_label_{X}.csv")
+# save the test results to a tempfile. After all results are collected, we will merge them.
+test.to_csv(f"test_results/test_{mode}_label_{X}_{train_l}.csv")
 
 print(test_results.metrics)
 
