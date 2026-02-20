@@ -9,6 +9,7 @@ Aligning NLP Models with Target Population Perspectives using PAIR: Population-A
 - `test_results`: Folder containing evaluation results on gold test set after the training experiments.
 - `eval_filtered.ipynb`: notebook script to evaluate models on difficult tweets (0.4 <=p_i<= 0.6).
 - `eval_full_tweets.ipynb`: notebook script to evaluate models on full tweets.
+- `simulation.R`: R script to run the simulations.
 - `simulation.ipynb`: notebook script to run the simulations.
 - `train.py`: python script to training the models on the simulated data.
 
